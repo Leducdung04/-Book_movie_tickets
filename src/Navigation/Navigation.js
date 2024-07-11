@@ -2,18 +2,19 @@ import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Wellcome from './src/Screen/Wellcome'
-import Bottomtabs from './src/Navigation/Bottomtabs'
-import Movide from './src/Screen/Movide'
-import Showtime from './src/Screen/Showtime'
-import BockTicket from './src/Screen/BockTicket'
-import HoaDonChiTet from './src/Screen/HoaDonChiTet'
-import Login from './src/Screen/Login'
-import Sigup from './src/Screen/Sigup'
+import Wellcome from '../Screen/Wellcome';
+import Bottomtabs from './Bottomtabs';
+import Movide from '../Screen/Movide';
+import Showtime from '../Screen/Showtime';
+import Login from '../Screen/Login';
+import Sigup from '../Screen/Sigup';
+import BockTicket from '../Screen/BockTicket';
+import HoaDonChiTet from '../Screen/HoaDonChiTet';
 import { Provider } from 'react-redux';
-import store from './src/redux/store/index'
+import store from '../redux/store';
+
 const Stack = createNativeStackNavigator();
-export default function App() {
+const Navigation = () => {
   return (
     <Provider store={store}>
     <NavigationContainer>
@@ -30,13 +31,8 @@ export default function App() {
     </NavigationContainer>
     </Provider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default Navigation;
+
+const styles = StyleSheet.create({});
