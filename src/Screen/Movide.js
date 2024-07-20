@@ -9,13 +9,15 @@ import {
   Text,
   TouchableOpacity,
   View,Animated,
-  Modal
+  Modal,
+  Alert
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Video } from "expo-av";
 import {uri_get_videos_by_movie,Ipv4} from '../api/index'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const widthScreem = Dimensions.get("window").width;
 const heightScreem = Dimensions.get("window").height;
@@ -48,6 +50,21 @@ const Movide = ({ navigation }) => {
   const [Videoslist, setVideoslist] = useState([]);
   const [Listds, setListds] = useState([]);
   const [ttBooktickets, setttBooktickets] = useState(false)
+  const [Taikhoan, setTaikhoan] = useState(null)
+
+  useEffect(() => {
+    const unsubscribe=navigation.addListener('focus',async()=>{
+          try {
+            const accountDataString = await AsyncStorage.getItem('Account');
+            setTaikhoan(await JSON.parse(accountDataString));
+            console.log('data Acount',Taikhoan);
+            getVideos();
+          } catch (error){
+            console.log(error);
+          }
+        });
+  }, [navigation])
+
   const getVideos = async () => {
     try {
       let response = await fetch(`${uri_get_videos_by_movie}/${data._id}`);
@@ -61,7 +78,7 @@ const Movide = ({ navigation }) => {
     }
   };
   useEffect(() => {
-    getVideos();
+    
   }, []);
 
   return (
@@ -199,7 +216,19 @@ const Movide = ({ navigation }) => {
       
       
     </ScrollView>
-    <TouchableOpacity onPress={()=>navigation.navigate('Showtime',{data:data._id})}>
+    <TouchableOpacity onPress={()=>{
+       if(Taikhoan!==null){
+        navigation.navigate('Showtime',{data:data._id})
+       }else{
+        Alert.alert('Thông báo','Vui lòng đăng nhập',[
+          {text:'Cancle',
+            style:'cancel',
+          },
+          {text: 'OK', onPress: () => navigation.navigate('Login'),style:'default'},
+        ])
+       }
+     
+      }}>
       <Animated.Image source={require('../img/sale.png')} style={[{position:'absolute',bottom:35,end:30,width:100,height:100},disAnimations]}/>
       <View style={{width:75,height:75,backgroundColor:'#94d0ee',position:'absolute',bottom:48,end:42,borderRadius:70,alignItems:'center',justifyContent:'center'}}>
         <Text style={{color:'white',fontSize:20,fontWeight:'bold'}}>Đặt Vé</Text>

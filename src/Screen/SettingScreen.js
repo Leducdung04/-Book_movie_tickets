@@ -256,8 +256,14 @@ const SettingScreen = ({ navigation }) => {
       getmovie()
   }, [])
   
-     return(<View style={{flex:1,height:150,borderRadius:10,backgroundColor:'white',margin:10,justifyContent:'center',paddingHorizontal:20}}>
+     return(<View style={{flex:1,height:150,borderRadius:10,backgroundColor:'white',margin:10,alignItems:'center',paddingHorizontal:20,flexDirection:'row'}}>
               <Image source={{uri:Phim&&Phim.img? Phim.img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlLkt9BmpUMbRD0A6P4Cjdbshfb4FTDMQoew&s'}} style={{width:100,height:120,borderRadius:5}}/>
+              <View style={{flex:1,height:'80%',margin:20,justifyContent:'space-around'}}><Text style={{marginStart:20,color:'#999999',fontWeight:'bold'}}>{Phim&&Phim.name? Phim.name:'Tên phim'}</Text>
+              <Text style={{marginStart:20}} numberOfLines={3}>{Phim&&Phim.content? Phim.content:'content'}</Text>
+              <Text style={{marginStart:20}} numberOfLines={2}>Diễn viên : {Phim&&Phim.performer? Phim.performer:'diễn viên'}</Text>
+              <Text style={{marginStart:20}} numberOfLines={2}>Đạo diễn : {Phim&&Phim.director? Phim.director:'Đạo diễn'}</Text>
+              </View>
+              
      </View>)
  }
  const ItemBills=({item})=>{
@@ -300,7 +306,7 @@ const SettingScreen = ({ navigation }) => {
            case 0: return <ItemBills item={item}/>
            case 1: return  <ItemTicket item={item}/>
            case 2: return  <ItemMovie item={item}/>
-           case 3: return (<View style={{width:100,height:100,backgroundColor:'blue'}}></View>);
+          //  case 3: return (<View style={{width:100,height:100,backgroundColor:'blue'}}></View>);
            default : return false
         }
  }
@@ -345,7 +351,7 @@ const SettingScreen = ({ navigation }) => {
         data={ListHienThi}
         renderItem={({item})=><ItemList item={item}/>}
       />);
-      case 3: return (<View style={{width:100,height:100,backgroundColor:'blue'}}></View>);
+      // case 3: return (<View style={{width:100,height:100,backgroundColor:'blue'}}></View>);
       default : return false
    }
   }
@@ -585,7 +591,7 @@ const SettingScreen = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           )}
-          {t1 === 3 ? (
+          {/* {t1 === 3 ? (
             <TouchableOpacity>
               <View style={{ alignItems: "center" }}>
                 <View
@@ -620,7 +626,7 @@ const SettingScreen = ({ navigation }) => {
                 </View>
               </View>
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
         {TaiKhoan === null ? (
           <View

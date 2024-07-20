@@ -186,7 +186,7 @@ const Home = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-          <AntDesign name="heart" size={35} color="white" />
+         
           <TouchableOpacity
             onPress={() => {
               setisSelectComment(true);
@@ -216,7 +216,7 @@ const Home = ({ navigation }) => {
           <View
             style={{
               position: "absolute",
-              height: heightScreen / 1.4,
+              height: heightScreen / 2,
               width: widthScreen,
               backgroundColor: "#121212",
               bottom: 0,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   },
   itemAction: {
     width: 50,
-    height: 300,
+    height: 200,
     position: "absolute",
     right: 10,
     bottom: 150,

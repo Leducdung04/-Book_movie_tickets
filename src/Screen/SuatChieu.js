@@ -12,6 +12,7 @@ const SuatChieu = ({navigation}) => {
   const  listTodo =  useSelector(state=>state.listTodo.listMovide);
    const dispatch = useDispatch();
 
+   
    useEffect(() => {
        dispatch(fetchTodos());
      }, [dispatch]);

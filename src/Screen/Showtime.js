@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import { Uri_get_movies_by_id, Uri_Showtime,Uri_listTicketById_showtime } from "../api/index";
 import { AntDesign } from '@expo/vector-icons';
+import moment from "moment";
 
 const heightScreen = Dimensions.get("window").height;
 
@@ -34,8 +35,8 @@ const Showtime = ({ navigation }) => {
   const [tb, settb] = useState(true);
   const [StatusBokingSticket, setStatusBokingSticket] = useState(false);
   const ListGhe = [...Array(54).keys()].map((num) => num + 1);
-  const [ListGheDaChon, setListGheDaChon] = useState([])
-  const [ListGheChon, setListGheChon] = useState([])
+  // const [ListGheDaChon, setListGheDaChon] = useState([])
+  // const [ListGheChon, setListGheChon] = useState([])
   //:id_movie/:date
   const getMovide = async () => {
     try {
@@ -69,12 +70,7 @@ const Showtime = ({ navigation }) => {
     return unsubscribe
   }, [navigation]);
 
-  // Hàm được gọi khi một ngày được chọn
-  const onDayPress = (day) => {
-    setSelectedDate(day.dateString);
-    getShowtime(day.dateString);
-  };
-
+  
   const ngay = () => {
     const date = new Date(selectedDate);
     const dayOfWeek = date
@@ -86,20 +82,30 @@ const Showtime = ({ navigation }) => {
     return `${dayOfWeek} ${month} ${dayOfMonth} ${year}`;
   };
 
-  
-  // const renderItem = ({ item }) =>{ 
-  //     const [statusChair, setstatusChair] = useState(0)
-  //  return(
-  //   <View style={{justifyContent:'center',alignItems:'center'}}>
-  //   <AntDesign name="QQ" size={widthScreen/9} color="#999999"/>
-  //   <Text style={{position:'absolute',color:'white',fontWeight:'bold',fontSize:18,width:40,height:30,textAlign:'center'}}>{item}</Text>
-  //   </View>
-  // )};
+  const [daysList, setDaysList] = useState([]);
+
+  useEffect(() => {
+    generateDaysList();
+    getShowtime(selectedDate)
+  }, []);
+
+  const generateDaysList = () => {
+    const daysArray = [];
+    for (let i = 0; i < 35; i++) {
+      const day = moment().add(i, 'days');
+      daysArray.push({
+        date: day.format('YYYY-MM-DD'),
+        dayOfWeek: day.format('dddd')
+      });
+      if(i===0){setSelectedDate(day.format('YYYY-MM-DD'))}
+    }
+    setDaysList(daysArray);
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground
-        style={{ height: 120, width: "100%" }}
+        style={{ height: 200, width: "100%" }}
         source={require("../img/image.png")}
       >
         <View
@@ -130,13 +136,38 @@ const Showtime = ({ navigation }) => {
           </Text>
         </View>
       </ImageBackground>
-
-      <Calendar
-        onDayPress={onDayPress} // Gọi hàm onDayPress khi một ngày được chọn
-        markedDates={{
-          [selectedDate]: { selected: true, selectedColor: "#94d0ee" },
-        }} // Đánh dấu ngày được chọn
+      
+      <View style={{height:80}}>
+      <FlatList
+      style={{marginTop:10}}
+      data={daysList}
+      keyExtractor={(item) => item.date}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      pagingEnabled={true} // Cho phép vuốt theo từng trang
+      initialScrollIndex={0} // Index ban đầu, bạn có thể tính toán để đảm bảo hiển thị chính xác
+      renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => { setSelectedDate(item.date);getShowtime(item.date); }}>
+            <View style={{
+              borderWidth: 1, height: 55, width: 50, margin: 4.5,
+              borderRadius: 10, justifyContent: 'center', alignItems: 'center',
+              borderColor: '#999999', backgroundColor: selectedDate == item.date ? "black" : 'white'
+            }}>
+              <Text style={{ color: selectedDate == item.date ? "white" : '#999999', fontWeight: 'bold' }}>
+                {item.dayOfWeek.substring(0, 3)}
+              </Text>
+              <Text style={{
+                fontWeight: 'bold', fontSize: 18,
+                color: selectedDate == item.date ? "white" : 'black'
+              }}>
+                {item.date.slice(-2)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
       />
+      </View>
+
       <Text
         style={{
           fontWeight: "bold",
@@ -171,8 +202,7 @@ const Showtime = ({ navigation }) => {
                       fontSize: 18,
                       fontWeight: "bold",
                       color: "#444444",
-                    }}
-                  >
+                    }}>
                     {item.time}
                   </Text>
                 </View>
@@ -185,6 +215,8 @@ const Showtime = ({ navigation }) => {
           <Text>Không có xuất chiếu trong ngày {ngay()}</Text>
         </View>
       )}
+
+
       <Modal
         visible={StatusBokingSticket}
         animationType="slide"
@@ -232,4 +264,20 @@ const Showtime = ({ navigation }) => {
 
 export default Showtime;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  dayContainer: {
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  dayText: {
+    fontSize: 16,
+  },
+});

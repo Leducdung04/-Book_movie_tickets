@@ -23,6 +23,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
 import NetInfo from "@react-native-community/netinfo"; 
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import ImagePicker from '@react-native-image-picker';
 // import { launchImageLibrary } from 'react-native-image-picker';
 
@@ -49,16 +50,31 @@ const BockTicket = ({ navigation }) => {
 
   const [newIdBill, setnewIdBill] = useState(null)
 
+  const [Taikhoan, setTaikhoan] = useState(null)
   useEffect(() => {
-    (async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
-      }
-    })();
-  }, []);
+    const unsubscribe=navigation.addListener('focus',async()=>{
+          try {
+            const accountDataString = await AsyncStorage.getItem('Account');
+            setTaikhoan(await JSON.parse(accountDataString));
+            console.log('data Acount'+Taikhoan);
+            Check_chair_status()
+            getDataMovie()
+          } catch (error){
+            console.log(error);
+          }
+        });
+  }, [navigation])
+
+  // useEffect(() => {
+  //   (async () => {
+  //     if (Platform.OS !== 'web') {
+  //       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //       if (status !== 'granted') {
+  //         alert('Sorry, we need camera roll permissions to make this work!');
+  //       }
+  //     }
+  //   })();
+  // }, []);
 
 const chooseImage = async () => {
   let result = await ImagePicker.launchImageLibraryAsync({
@@ -104,15 +120,7 @@ const AmThanhThanhCong = async () => {
       console.log("Lỗi khi lấy dữ liệu list vé theo id suất chiếu trong màn BockTixket", error)
     }
   }
-
-  useEffect(() => {
-    NetInfo.fetch().then(state => {
-      console.log("Connection type", state.type);
-      console.log("Is connected?", state.isConnected);
-    });
-  }, []);
   
-
   const handleOrder = async () => {
     try {
       const id= await ThemBill();
@@ -147,7 +155,7 @@ const AmThanhThanhCong = async () => {
     dulieuthem.append('Payment_methods',payMethod);
     dulieuthem.append('date', `${day}/${month}/${year}`);
     dulieuthem.append('time', `${hours}:${minutes}`);
-    dulieuthem.append("id_uer","663b1b0095121af8cf26fe17");
+    dulieuthem.append("id_uer",Taikhoan._id);
     dulieuthem.append('status', 0);
     dulieuthem.append('img',payMethod==2?{
       uri: ImgQR.uri,
@@ -202,7 +210,7 @@ const AmThanhThanhCong = async () => {
                       pay:payMethod,
                       status:0,
                       id_bills:id,
-                      id_users:'663b1b0095121af8cf26fe17',
+                      id_users:Taikhoan._id,
                       id_showtimes:data._id,
                   })
                })
@@ -242,12 +250,6 @@ const AmThanhThanhCong = async () => {
       console.log("Lỗi khi thực hiện truy xuất Movie"+error)
     }
   }
-  useEffect(() => {
-    Check_chair_status()
-      getDataMovie()
-   
-  }, []);
-
   useEffect(() => {
     setTotalPrice(Chair_select.length * PriceTicket);
   }, [Chair_select]);
@@ -400,18 +402,31 @@ const AmThanhThanhCong = async () => {
                   <Text style={{color:'#ff4500',fontSize:20,textAlign:'center',fontWeight:'bold'}}>{TotalPrice.toLocaleString()} vnd</Text>
               </View>
               <TouchableOpacity onPress={()=>{
-                if(Chair_select.length===0){
-                  Alert.alert('Vui lòng chọn ghế')
+                if(Taikhoan!==null){
+                  if(Chair_select.length===0){
+                    Alert.alert('Vui lòng chọn ghế')
+                  }else{
+                    payMethod===1?setcomfirmBooking(true):setcomfirmBookingByPay(true)
+                  }
                 }else{
-                  payMethod===1?setcomfirmBooking(true):setcomfirmBookingByPay(true)
+                  Alert.alert('Thông báo','Vui lòng đăng nhập',[
+                    {text:'Cancle',
+                      style:'cancel',
+                    },
+                    {text: 'OK', onPress: () =>navigation.navigate("Login")},
+                  ])
                 }
+
+               
+
+
+
+               
                 }} style={{flex:1}}>
               <View style={{flex:1,backgroundColor:'#94d0ee',borderRadius:40,justifyContent:'center'}}>
                     <Text style={{color:'white',fontSize:20,textAlign:'center',fontWeight:'bold'}}>Đặt Vé</Text>
               </View>
-              </TouchableOpacity>
-
-            
+              </TouchableOpacity>  
         </View>
          </View>
          
@@ -552,8 +567,6 @@ const AmThanhThanhCong = async () => {
                         </View>
                </View>
           </Modal>
-
-
     </View>
   );
 };
